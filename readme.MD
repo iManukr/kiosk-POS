@@ -1,0 +1,900 @@
+# Kiosk Manager — OOP Capstone Project
+
+The **Kiosk Manager** is a simple business management program for a small kiosk.
+
+It allows the owner to:
+
+* View current stock
+* Add or restock products
+* Sell products
+* Track sales
+* View a sales report
+* Search for products
+* Save data between program runs
+
+This version uses **Object-Oriented Programming (OOP)** and is divided into small modules to make the code easier to read, maintain, test, and explain.
+
+---
+
+## Important Note
+
+This version uses **classes and separate modules**.
+
+If the project brief strictly requires **no classes**, use the simpler non-OOP version unless your instructor approves the use of OOP.
+
+---
+
+# Program Features
+
+## 1. Welcome and Setup
+
+When the program starts, it asks for:
+
+* The kiosk name
+* The owner's name
+
+Input is cleaned using:
+
+```python
+.strip()
+.title()
+```
+
+For example:
+
+```python
+kiosk_name = input("Enter the kiosk's name: ").strip().title()
+owner_name = input("Enter the owner's name: ").strip().title()
+```
+
+Example input:
+
+```text
+Enter the kiosk's name:    my kiosk
+Enter the owner's name:  john doe   
+```
+
+The cleaned values become:
+
+```text
+My Kiosk
+John Doe
+```
+
+The program can then display:
+
+```text
+Welcome to My Kiosk's Kiosk Manager, run by John Doe
+```
+
+---
+
+## 2. Main Menu
+
+The program runs inside a `while True` loop and displays the following menu:
+
+```text
+===== MAIN MENU =====
+
+1. View Stock
+2. Add/Restock Product
+3. Sell Product
+4. View Sales Report
+5. Search Products
+6. Exit
+```
+
+Menu input is validated using `.isdigit()`.
+
+For example:
+
+```python
+choice = input("Enter your choice: ").strip()
+
+if not choice.isdigit():
+    print("Please enter a number.")
+    continue
+```
+
+This prevents the program from crashing when the user enters letters instead of a number.
+
+Example:
+
+```text
+Enter your choice: abc
+Please enter a number.
+```
+
+---
+
+## 3. Inventory Management
+
+The program stores products using a dictionary.
+
+Each product contains:
+
+* Name
+* Price
+* Quantity
+
+The `Inventory` class stores the products in:
+
+```python
+self.products = {}
+```
+
+Example structure:
+
+```python
+{
+    "Bread": Product(...),
+    "Milk": Product(...),
+    "Sugar": Product(...)
+}
+```
+
+The user can:
+
+* View all stock
+* Add a new product
+* Restock an existing product
+* Search for products
+* Find products with low stock
+
+Stock is displayed in aligned columns using f-string formatting.
+
+Example:
+
+```text
+===== CURRENT STOCK =====
+
+Product       Price       Quantity
+-----------------------------------
+Bread         60          20
+Milk          50          30
+Sugar         150         15
+```
+
+---
+
+## 4. Selling a Product
+
+When a product is sold, the program checks:
+
+1. Whether the product exists
+2. Whether the quantity entered is valid
+3. Whether there is enough stock
+
+Example:
+
+```text
+Enter product name: Bread
+Enter quantity to sell: 5
+```
+
+If Bread costs `60` per item:
+
+```text
+60 × 5 = 300
+```
+
+The program displays:
+
+```text
+Sale successful!
+
+Product: Bread
+Quantity: 5
+Total: 300
+```
+
+If the product originally had 20 units:
+
+```text
+Before sale: 20
+Quantity sold: 5
+After sale: 15
+```
+
+The sale is also recorded in the `SalesLog`.
+
+The product is added to the set of unique products sold.
+
+---
+
+# 5. Sales Report
+
+The sales report shows:
+
+* Every sale made during the session
+* Total revenue
+* Number of unique products sold
+* Best-selling product
+
+The sales report uses:
+
+* A list to store all sales
+* A tuple for each individual sale
+* A set to store unique products sold
+
+Example:
+
+```text
+===== SALES REPORT =====
+
+Product       Quantity       Total
+-----------------------------------
+Bread         5              300
+Milk          2              100
+Bread         3              180
+
+Total Revenue: 580
+Unique Products Sold: 2
+Best-Selling Product: Bread
+```
+
+The best-selling product is determined by the total quantity sold.
+
+For example:
+
+```text
+Bread: 5 + 3 = 8
+Milk:  2
+```
+
+Therefore:
+
+```text
+Best-Selling Product: Bread
+```
+
+---
+
+# 6. Searching Products
+
+The user can search for a product using part of its name.
+
+The search uses:
+
+```python
+.lower()
+```
+
+and the `in` operator.
+
+For example:
+
+```text
+Enter product name to search: bre
+```
+
+can match:
+
+```text
+Bread
+```
+
+The search is case-insensitive.
+
+Therefore:
+
+```text
+bread
+Bread
+BREAD
+```
+
+can all match the same product.
+
+---
+
+# 7. File Saving and Loading
+
+The program saves data into plain text files.
+
+### When the program starts
+
+The program checks whether:
+
+```text
+stock.txt
+```
+
+exists.
+
+If it exists:
+
+* The saved inventory is loaded.
+
+If it does not exist:
+
+* Default stock is created.
+
+### When the program exits
+
+The program:
+
+* Saves the current inventory to `stock.txt`
+* Appends sales to `sales_history.txt`
+* Saves low-stock alerts to `restock_alerts.txt`
+
+---
+
+# Project Structure
+
+```text
+kiosk_oop/
+│
+├── main.py
+├── kiosk.py
+├── product.py
+├── inventory.py
+├── sales.py
+├── reports.py
+├── storage.py
+└── utils.py
+```
+
+The text files are generated by the program when required:
+
+```text
+stock.txt
+sales_history.txt
+restock_alerts.txt
+```
+
+---
+
+# Module Explanation
+
+## `main.py`
+
+This file starts the program.
+
+It creates the `Kiosk` object and starts the main program loop.
+
+Example:
+
+```python
+kiosk = Kiosk()
+kiosk.run()
+```
+
+---
+
+## `kiosk.py`
+
+This file contains the `Kiosk` class.
+
+The `Kiosk` class controls the whole program. It:
+
+* Shows the menu
+* Gets user choices
+* Validates menu input
+* Calls the appropriate functions
+* Connects inventory, sales, reports, and storage
+
+The `Kiosk` class acts as the main controller of the application.
+
+---
+
+## `product.py`
+
+This file contains the `Product` class.
+
+A `Product` object represents one item in the kiosk, such as Bread or Milk.
+
+It stores:
+
+* Product name
+* Product price
+* Product quantity
+
+Example:
+
+```python
+bread = Product("Bread", 60, 20)
+```
+
+The `Product` class has methods to:
+
+* Restock the product
+* Check whether enough stock is available
+* Reduce stock after a sale
+* Calculate a sale total
+* Convert product data into a format suitable for storage
+
+---
+
+## `inventory.py`
+
+This file contains the `Inventory` class.
+
+The `Inventory` object manages multiple `Product` objects.
+
+It stores products in a dictionary so that products can be found quickly by name.
+
+It can:
+
+* Add new products
+* Restock existing products
+* Sell products
+* Search products
+* Find low-stock products
+
+Example:
+
+```python
+inventory.add_product("Bread", 60, 20)
+```
+
+---
+
+## `sales.py`
+
+This file contains the `SalesLog` class.
+
+The `SalesLog` object records all sales made during the current session.
+
+It uses:
+
+* A list to store all sales
+* A tuple for each sale
+* A set to store unique products sold
+
+Each sale tuple has the structure:
+
+```python
+(item, quantity, total)
+```
+
+Example:
+
+```python
+("Bread", 5, 300)
+```
+
+The `SalesLog` class can also calculate:
+
+* Total revenue
+* Unique products sold
+* Best-selling product
+
+---
+
+## `reports.py`
+
+This file contains the `Reports` class.
+
+The `Reports` object handles formatted output.
+
+It can display:
+
+* Current stock
+* Sales reports
+* Search results
+* Other business information
+
+Keeping display logic in a separate class helps prevent the main program from becoming too large.
+
+---
+
+## `storage.py`
+
+This file contains the `Storage` class.
+
+The `Storage` object handles file saving and loading.
+
+It is responsible for:
+
+* Loading inventory from `stock.txt`
+* Saving inventory to `stock.txt`
+* Saving sales to `sales_history.txt`
+* Saving low-stock alerts to `restock_alerts.txt`
+
+Example:
+
+```python
+storage.save_inventory(inventory)
+```
+
+This keeps file-handling logic in one place.
+
+---
+
+## `utils.py`
+
+This file contains helper functions.
+
+These functions help clean and validate user input.
+
+Examples include:
+
+```python
+clean_text()
+get_positive_int()
+```
+
+Depending on the implementation, additional validation functions can also be included, such as:
+
+```python
+get_positive_float()
+```
+
+---
+
+# Required Data Structures
+
+This project demonstrates four important Python data structures:
+
+1. Dictionary
+2. List
+3. Tuple
+4. Set
+
+---
+
+## 1. Dictionary
+
+The dictionary is used inside `inventory.py`:
+
+```python
+self.products = {}
+```
+
+It stores product names as keys and `Product` objects as values.
+
+Example:
+
+```python
+{
+    "Bread": Product("Bread", 60, 20),
+    "Milk": Product("Milk", 50, 30)
+}
+```
+
+---
+
+## 2. List
+
+The list is used inside `sales.py`:
+
+```python
+self.sales = []
+```
+
+It stores all sales made during the current session.
+
+Example:
+
+```python
+[
+    ("Bread", 5, 300),
+    ("Milk", 2, 100)
+]
+```
+
+---
+
+## 3. Tuple
+
+Each individual sale is stored as a tuple:
+
+```python
+sale = (item, quantity, total)
+```
+
+Example:
+
+```python
+("Bread", 5, 300)
+```
+
+A tuple is appropriate because once a sale has been recorded, its basic transaction data should not be modified.
+
+---
+
+## 4. Set
+
+The set is used inside `sales.py`:
+
+```python
+self.unique_products = set()
+```
+
+It stores unique products sold.
+
+For example, if Bread is sold several times:
+
+```text
+Bread
+Bread
+Bread
+Milk
+```
+
+the set contains:
+
+```python
+{"Bread", "Milk"}
+```
+
+Sets automatically prevent duplicate values.
+
+---
+
+# How OOP Simplifies the Code
+
+Without OOP, many functions would need to share and directly modify large dictionaries, lists, and sets.
+
+With OOP, each part of the program has its own responsibility.
+
+For example, instead of manually changing a product's stock:
+
+```python
+products["Bread"]["quantity"] -= 5
+```
+
+the program can use the `Product` object:
+
+```python
+product.sell(5)
+```
+
+Instead of manually adding sales to multiple data structures:
+
+```python
+sales.append(("Bread", 5, 300))
+unique_products.add("Bread")
+```
+
+the program can use:
+
+```python
+self.sales_log.add_sale("Bread", 5, 300)
+```
+
+File operations can also be kept inside the `Storage` class:
+
+```python
+self.storage.save_inventory(self.inventory)
+```
+
+This separation makes the program easier to:
+
+* Read
+* Test
+* Debug
+* Maintain
+* Extend
+
+---
+
+# How the Classes Work Together
+
+The main relationship between the classes is:
+
+```text
+                    Kiosk
+                      │
+        ┌─────────────┼─────────────┐
+        │             │             │
+        ▼             ▼             ▼
+   Inventory       SalesLog       Storage
+        │             │
+        ▼             ▼
+    Product         Reports
+```
+
+For example, when a customer buys a product:
+
+```text
+User
+  │
+  ▼
+Kiosk
+  │
+  ▼
+Inventory
+  │
+  ▼
+Product
+  │
+  ├── Check stock
+  ├── Reduce stock
+  └── Calculate total
+          │
+          ▼
+       SalesLog
+          │
+          ▼
+       Reports
+```
+
+Each class is responsible for a specific part of the application.
+
+---
+
+# Example Program Flow
+
+The following is an example session using fictional input:
+
+```text
+Enter the kiosk's name: my kiosk
+Enter the owner's name: john doe
+
+Welcome to My Kiosk's Kiosk Manager, run by John Doe
+
+===== MAIN MENU =====
+
+1. View Stock
+2. Add/Restock Product
+3. Sell Product
+4. View Sales Report
+5. Search Products
+6. Exit
+
+Enter your choice: 1
+```
+
+The user selects **View Stock**:
+
+```text
+===== CURRENT STOCK =====
+
+Product       Price       Quantity
+-----------------------------------
+Bread         60          20
+Milk          50          30
+Sugar         150         15
+```
+
+The user then sells Bread:
+
+```text
+Enter your choice: 3
+
+Enter product name: bread
+Enter quantity to sell: 5
+
+Sale successful!
+
+Product: Bread
+Quantity: 5
+Total: 300
+```
+
+The stock changes from:
+
+```text
+Bread: 20
+```
+
+to:
+
+```text
+Bread: 15
+```
+
+The sale is recorded as:
+
+```python
+("Bread", 5, 300)
+```
+
+---
+
+# Files Created by the Program
+
+## `stock.txt`
+
+Stores the current inventory.
+
+Example:
+
+```text
+Bread,60,20
+Milk,50,30
+Sugar,150,15
+```
+
+The format is:
+
+```text
+product_name,price,quantity
+```
+
+---
+
+## `sales_history.txt`
+
+Stores sales from different sessions.
+
+Example:
+
+```text
+Bread,5,300
+Milk,2,100
+```
+
+The format is:
+
+```text
+product_name,quantity,total
+```
+
+Sales are appended so previous sales are not overwritten.
+
+---
+
+## `restock_alerts.txt`
+
+Stores products that are below the low-stock threshold.
+
+Example:
+
+```text
+===== RESTOCK ALERTS =====
+
+Sugar: only 3 left
+```
+
+---
+
+# How to Run the Program
+
+Place all Python files in the same folder:
+
+```text
+kiosk_oop/
+│
+├── main.py
+├── kiosk.py
+├── product.py
+├── inventory.py
+├── sales.py
+├── reports.py
+├── storage.py
+└── utils.py
+```
+
+Open a terminal in the project folder and run:
+
+```bash
+python main.py
+```
+
+On systems where Python 3 is invoked using `python3`, run:
+
+```bash
+python3 main.py
+```
+
+No external Python packages are required.
+
+---
+
+# Skills Demonstrated
+
+This project demonstrates:
+
+* Variables
+* User input
+* Conditional statements
+* Loops
+* Functions
+* Classes and objects
+* Dictionaries
+* Lists
+* Tuples
+* Sets
+* String cleaning
+* Input validation
+* File reading
+* File writing
+* Object-Oriented Programming
+* Modular program design
+* Separation of responsibilities
+* Basic business logic
+
+The project demonstrates how fundamental Python concepts can be combined to create a small, functional business management application.
